@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="ur3e_with_torch">
+
+<!--########## ur3e 모델을 불러오는 코드 ############-->
+
+  <!-- 필수 인자 선언 -->
+  <xacro:arg name="name" default="ur3e"/>
+  <xacro:arg name="ur_type" default="ur3e"/>
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="use_fake_hardware" default="true"/>
+  <xacro:arg name="sim_gazebo" default="false"/>
+  <xacro:arg name="sim_ignition" default="false"/>
+
+  <!-- 기본 UR3e 로봇 include -->
+  <xacro:include filename="$(find ur_description)/urdf/ur.urdf.xacro"/>
+
+<!--########## ur3e 모델에 엔드이펙터를 붙이는 코드 ############-->
+ <!-- 엔드이펙터(토치) 링크 정의 -->
+  <link name="torch_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ur_description/meshes/ur3e/visual/torch.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ur_description/meshes/ur3e/visual/torch.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0"
+               iyy="0.01" iyz="0.0"
+               izz="0.01"/>
+    </inertial>
+  </link>
+
+  <joint name="torch_fixed_joint" type="fixed">
+    <parent link="tool0"/>
+    <child link="torch_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+<!--토치 끝단 좌표계 정의-->
+<link name="torch_tip"/>
+
+<joint name="torch_tip_joint" type="fixed">
+  <parent link="torch_link"/>
+  <child link="torch_tip"/>
+  <!-- Tip 위치 오프셋: torch_link 기준 위치 -->
+  <origin xyz="-0.20773 0 0.38736" rpy="0 -0.820304 0"/>
+</joint>
+
+</robot>
